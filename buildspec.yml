@@ -3,10 +3,17 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - env
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 123456789012.dkr.ecr.us-west-2.amazonaws.com
+
   build:
     commands:
-      - echo Build started on `date`
-      - echo Building the Docker image...
-      - docker build -t $ECR_REPO_URI:latest .
-      - docker push $ECR_REPO_URI:latest
+      - echo Building Docker image...
+      - docker build -t my-docker-image .
+
+  post_build:
+    commands:
+      - echo Tagging Docker image...
+      - docker tag my-docker-image:latest 392129347642.dkr.ecr.us-east-1.amazonaws.com/my-docker-repo:latest
+      - echo Pushing Docker image to Amazon ECR...
+      - docker push 392129347642.dkr.ecr.us-east-1.amazonaws.com/my-docker-repo:latest
