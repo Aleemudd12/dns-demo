@@ -7,13 +7,13 @@ RUN yum update -y && \
     yum clean all
 
 # Copy the script into the container
-COPY setup.sh /setup.sh
+COPY my_script.sh /my_script.sh
 
 # Make the script executable
-RUN chmod +x /setup.sh
+RUN chmod +x /my_script.sh
 
 # Expose port 80
 EXPOSE 80
 
 # Run the script when the container starts
-CMD ["/setup.sh"]
+CMD ["/my_script.sh"]
