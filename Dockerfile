@@ -1,14 +1,19 @@
-# Use a base image with a shell (such as Alpine Linux)
-FROM alpine:latest
+# Use a base image with CentOS
+FROM centos:latest
 
-# Set working directory
-WORKDIR /app
+# Install necessary packages
+RUN yum update -y && \
+    yum install -y httpd && \
+    yum clean all
 
-# Copy the shell script into the container
-COPY my_script.sh /app/
+# Copy the script into the container
+COPY setup.sh /setup.sh
 
-# Set permissions to make the script executable (if needed)
-RUN chmod +x my_script.sh
+# Make the script executable
+RUN chmod +x /setup.sh
 
-# Define the command to run the script when the container starts
-CMD ["./my_script.sh"]
+# Expose port 80
+EXPOSE 80
+
+# Run the script when the container starts
+CMD ["/setup.sh"]
