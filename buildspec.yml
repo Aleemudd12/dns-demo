@@ -1,19 +1,23 @@
 version: 0.2
 
 phases:
+  install:
+    runtime-versions:
+      nodejs: 14
+    commands:
+      - echo Installing Docker
+      - apt-get update -y
+      - apt-get install -y docker.io
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 392129347642.dkr.ecr.us-east-1.amazonaws.com
-
+      - aws --version
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REPO_URI
   build:
     commands:
       - echo Building Docker image...
-      - docker build -t my-docker-image .
-
+      - docker build -t $ECR_REPO_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION .
   post_build:
     commands:
-      - echo Tagging Docker image...
-      - docker tag myecrrepo:latest 392129347642.dkr.ecr.us-east-1.amazonaws.com/myecrrepo:latest
       - echo Pushing Docker image to Amazon ECR...
-      - docker push 392129347642.dkr.ecr.us-east-1.amazonaws.com/myecrrepo:latestt
+      - docker push $ECR_REPO_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION
